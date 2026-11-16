@@ -1,0 +1,17 @@
+[project]
+name = "memory-mesh-mcp"
+version = "0.1.0"
+description = "MCP server exposing Memory Mesh to AI clients"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = ["mcp>=2.3,<3", "memory-mesh-sdk"]
+
+[project.scripts]
+memory-mesh-mcp = "memory_mesh_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["memory_mesh_mcp"]

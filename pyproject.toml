@@ -1,0 +1,20 @@
+[project]
+name = "memory-mesh-workspace"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["memory-mesh-core", "memory-mesh-sdk", "memory-mesh-mcp"]
+
+[tool.uv.workspace]
+members = ["packages/core", "packages/sdk-python", "packages/mcp"]
+
+[tool.uv.sources]
+memory-mesh-core = { workspace = true }
+memory-mesh-sdk = { workspace = true }
+memory-mesh-mcp = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "httpx>=0.27"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

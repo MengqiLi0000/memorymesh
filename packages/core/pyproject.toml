@@ -1,0 +1,30 @@
+[project]
+name = "memory-mesh-core"
+version = "0.1.0"
+description = "Memory Mesh core: memory, temporal graph, human model, semantic arena, context engine and REST API."
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = [
+  "mem0ai==2.2.1",
+  "graphiti-core==0.31.2",
+  "kuzu==0.11.3",
+  "fastembed==0.9.1",
+  "qdrant-client>=1.12",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.7",
+]
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.40"]
+litellm = ["litellm>=1.50"]
+
+[project.scripts]
+memory-mesh = "memory_mesh.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["memory_mesh"]
