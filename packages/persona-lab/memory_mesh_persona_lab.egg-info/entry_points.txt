@@ -1,2 +1,0 @@
-[console_scripts]
-persona-lab = persona_lab.experiment:main

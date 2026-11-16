@@ -4,3 +4,34 @@ W1116 13:04:55.597000 9229 .venv/lib/python3.12/site-packages/torch/distributed/
 [formality] generating contrastive responses ...
 [formality] steering layer=12 coeff=-8
 [formality] steering layer=12 coeff=-4
+[formality] steering layer=12 coeff=-2
+[formality] steering layer=12 coeff=0
+[formality] steering layer=12 coeff=2
+[formality] steering layer=12 coeff=4
+[formality] steering layer=12 coeff=8
+[formality] steering layer=20 coeff=-8
+[formality] steering layer=20 coeff=-4
+[formality] steering layer=20 coeff=-2
+[formality] steering layer=20 coeff=0
+[formality] steering layer=20 coeff=2
+[formality] steering layer=20 coeff=4
+[formality] steering layer=20 coeff=8
+[sycophancy] generating contrastive responses ...
+[sycophancy] steering layer=12 coeff=-8
+[sycophancy] steering layer=12 coeff=-4
+[sycophancy] steering layer=12 coeff=-2
+[sycophancy] steering layer=12 coeff=0
+[sycophancy] steering layer=12 coeff=2
+[sycophancy] steering layer=12 coeff=4
+[sycophancy] steering layer=12 coeff=8
+[sycophancy] steering layer=16 coeff=-8
+[sycophancy] steering layer=16 coeff=-4
+[sycophancy] steering layer=16 coeff=-2
+[sycophancy] steering layer=16 coeff=0
+[sycophancy] steering layer=16 coeff=2
+[sycophancy] steering layer=16 coeff=4
+[sycophancy] steering layer=16 coeff=8
+wrote /Users/ml/memory-mesh/benchmarks/persona_lab_results/results.json and /Users/ml/memory-mesh/benchmarks/persona_lab_results/REPORT.md in 106.2 s
+real 107.38
+user 22.39
+sys 7.74

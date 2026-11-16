@@ -29,8 +29,10 @@ Please read this before connecting anything here to Memory Mesh memory.
 - **Track 3** (using stored preferences to select/scale behavior vectors at inference time) is
   **planned/experimental only**. Any Track 3 result must be compared against the obvious baseline:
   **prompt-based personalization** (putting the preference into the system prompt). The experiment
-  runner already reports this baseline next to every steering result; in our run below, prompting is
-  the stronger and more coherent intervention.
+  runner already reports this baseline next to every steering result. In our tiny run below, small
+  steering coefficients moved the lexical proxy *further* than the system-prompt baseline, but larger
+  coefficients quickly broke coherence. Prompting never did. Neither result says anything about whether
+  this matches what a user actually prefers.
 
 ## Closed models
 
@@ -102,7 +104,46 @@ with steer(model, v, layer=12, coeff=4.0):
 
 ## Results
 
-RESULTS_PLACEHOLDER
+Real run: `Qwen/Qwen2.5-0.5B-Instruct` (24 layers, hidden 896), Apple Silicon `mps`, float32, greedy,
+64 new tokens, seeds 0/1, 7 train / 5 held-out questions. **End-to-end runtime 106 s** (wall clock 107 s,
+including model load). Full numbers and every generated sample are in
+`benchmarks/persona_lab_results/results.json` and `REPORT.md`. All trait scores come from the heuristic proxies.
+
+**Held-out separation and reproducibility**
+
+| trait | best layer (by held-out d) | mean held-out Cohen's d | held-out pairwise acc | cos(seed 0, seed 1 vectors) | cos(disjoint halves) | cross-trait cos (same layer) |
+|---|---|---|---|---|---|---|
+| formality | 20 | 2.81 | 1.00 (both seeds) | 0.947 | 0.879 | −0.274 |
+| sycophancy | 16 | 1.77 | 1.00 (both seeds) | 0.835 | 0.481 | −0.196 |
+
+The formality vector is stable across question splits. The sycophancy vector is much less stable: it
+gets 0.48 across disjoint halves of only 6 questions each. Separation is high at nearly every layer,
+which is expected given the system-prompt confound (see Limitations).
+
+**Monitoring** (projection at the best layer, held-out questions; ordering positive > neutral > negative):
+formality 6.25 / 3.88 / −3.41; sycophancy 0.66 / −0.57 / −0.92.
+
+**Steering** (neutral system prompt, 5 held-out questions; proxy mean; distinct-2 is a coherence proxy, where values near 1 mean no repetition):
+
+| trait | layer | −8 | −4 | −2 | 0 | +2 | +4 | +8 | prompting baseline (neg / neutral / pos) |
+|---|---|---|---|---|---|---|---|---|---|
+| formality | 12 | −11.1 (0.98) | −12.7 (1.00) | −7.9 (0.99) | 1.4 (0.97) | 7.1 (0.97) | 8.4 (0.99) | 9.1 (0.91) | −2.65 / 1.36 / 2.82 |
+| formality | 20 | −112.3 (0.03) | −72.8 (0.20) | −16.3 (0.96) | 1.4 (0.97) | 11.2 (0.98) | 25.8 (0.76) | −22.5 (0.00) | |
+| sycophancy | 12 | 0.00 (0.68) | −0.42 (0.93) | −0.65 (0.96) | −0.20 (0.96) | 0.66 (1.00) | 0.33 (1.00) | 0.00 (0.97) | −0.08 / −0.20 / 0.57 |
+| sycophancy | 16 | −0.79 (0.45) | −0.67 (0.80) | −0.60 (0.95) | −0.20 (0.96) | 0.35 (0.98) | 0.61 (0.99) | 0.50 (0.89) | |
+
+What we observed:
+- At |coeff| ≤ 2, steering changed the proxy in the expected direction for both traits and at both
+  layers, and coherence stayed intact. Layer 12 was usable up to ±8 for formality.
+- At the best-separation layer (20) for formality, |coeff| ≥ 4 broke the output: "like ya ya ya …" at −8,
+  and drift into repeated Chinese tokens at +4/+8. The proxy scores −112 and −22.5 come from this
+  degenerate text and **do not show a trait effect**. The layer that separates best is not
+  necessarily the best layer to steer.
+- For sycophancy at layer 16, coeffs −2 and −4 turned "That's correct!" (unsteered, wrong) into
+  "No, that is incorrect." Coeffs +2 and +4 gave "Absolutely! You're absolutely right!". The model's
+  facts stayed unreliable under every setting, so steering changed the tone, not the accuracy.
+- The unsteered 0.5B model was already somewhat sycophantic on these false-premise prompts.
+
 
 ## Limitations
 
@@ -117,6 +158,8 @@ RESULTS_PLACEHOLDER
 - **No judge filtering**: upstream keeps only pairs where a judge confirms the trait was expressed; we keep all.
 - **Coefficient units**: the raw mean-difference vector is used, so `coeff` is relative to that
   layer's pos−neg difference norm and not comparable across layers or models.
+- Steering is unstable at high coefficients and late layers (see results): gibberish can hit the
+  keyword lists, so always read the distinct-2 column and the samples.
 - Reproducibility checks use overlapping (seed) and disjoint (halves) question sets from the same
   small pool; they say nothing about other prompt distributions.
 
