@@ -24,7 +24,8 @@ class ContextEngine:
                 if p:
                     items.append({"type": "semantic", "id": f"sem:{p['concept']}",
                                   "text": f"When the user says '{a['surface']}', they have preferred: {p['label']} — "
-                                          f"{p['instruction']} (confidence {p['confidence']}, {p['status']})",
+                                          f"{p['instruction']} ({p['status']}: {p['observations']} comparison(s), "
+                                          f"p(top over next)={p['confidence']})",
                                   "relevance": 1.0, "confidence": p["confidence"] or .5,
                                   "evidence": p["evidence"]})
                 else:

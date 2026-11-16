@@ -17,6 +17,8 @@ class Settings:
     neo4j_password: str | None = field(default_factory=lambda: os.getenv("NEO4J_PASSWORD"))
     falkordb_host: str = field(default_factory=lambda: os.getenv("FALKORDB_HOST", "localhost"))
     admin_key: str | None = field(default_factory=lambda: os.getenv("MESH_ADMIN_KEY"))
+    demo_enabled: bool = field(default_factory=lambda: os.getenv("MESH_DEMO", "1").lower() in ("1", "true", "yes"))
+    demo_sessions_per_hour: int = field(default_factory=lambda: int(os.getenv("MESH_DEMO_SESSIONS_PER_HOUR", "30")))
     cors_origins: list[str] = field(default_factory=lambda: os.getenv(
         "MESH_CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(","))
 

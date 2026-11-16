@@ -105,7 +105,7 @@ class Mesh:
         self.authz(p, user_id, "events:write")
         consent = consent or ({"user_authorized": True} if kind == "message" else None)
         validate_event(kind, consent)
-        agent = None if p.is_admin else p.id
+        agent = p.id if p.kind == "agent" else None
         ev = {"id": new_id("evt"), "user_id": user_id, "agent_id": agent, "kind": kind, "content": content,
               "payload": payload or {}, "consent": consent, "occurred_at": occurred_at or now(),
               "ingested_at": now(), "results": None}
@@ -154,7 +154,7 @@ class Mesh:
         m = self.memory.get(memory_id)
         if m.get("user_id") != user_id:
             raise Forbidden("memory belongs to another user")
-        if not p.is_admin and (m.get("metadata") or {}).get("mesh_source_agent") != p.id:
+        if not p.owns(user_id) and (m.get("metadata") or {}).get("mesh_source_agent") != p.id:
             raise Forbidden("agents may only delete memories they wrote")
         self.memory.delete(memory_id)
         ev = (m.get("metadata") or {}).get("mesh_provenance", {}).get("id")
@@ -162,7 +162,7 @@ class Mesh:
 
     async def delete_event(self, p: Principal, user_id: str, event_id: str) -> dict:
         """Delete a raw event and everything derived from it (memories, observations' evidence, graph edges)."""
-        if not p.is_admin:
+        if not p.owns(user_id):
             raise Forbidden("only the user (owner) can delete events")
         ev = self.db.one("SELECT * FROM events WHERE id=? AND user_id=?", [event_id, user_id])
         removed = {"memories": [], "edges": []}
@@ -181,7 +181,7 @@ class Mesh:
         return {"deleted": event_id, "existed": bool(ev), "propagated": removed}
 
     async def delete_user(self, p: Principal, user_id: str) -> dict:
-        if not p.is_admin:
+        if not p.owns(user_id):
             raise Forbidden("only the user (owner) can delete all data")
         self.memory.delete_all(user_id)
         await self.graph.delete_user(user_id)
@@ -193,7 +193,7 @@ class Mesh:
         return {"deleted_user": user_id}
 
     async def export_user(self, p: Principal, user_id: str) -> dict:
-        if not p.is_admin:
+        if not p.owns(user_id):
             raise Forbidden("only the user (owner) can export all data")
         g = await self.graph.snapshot(user_id) if self.graph.enabled else None
         return {"user_id": user_id, "exported_at": now(), "memories": self.memory.export(user_id),

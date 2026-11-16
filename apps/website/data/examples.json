@@ -1,0 +1,89 @@
+{
+ "ingest": {
+  "event_id": "evt_5bb7fd8d781f48cd",
+  "memories": [
+   {
+    "id": "6c1264ce-08c8-45d4-b5bb-8de5d6f85dfb",
+    "memory": "I prefer business advice with new information, precise evidence and actionable decisions.",
+    "event": "ADD"
+   }
+  ],
+  "observations": [
+   {
+    "id": "obs_736a5dbbe2904067",
+    "kind": "preference",
+    "statement": "Prefers business advice with new information, precise evidence and actionable decisions",
+    "consolidation": "created"
+   }
+  ]
+ },
+ "search": [
+  {
+   "id": "6c1264ce-08c8-45d4-b5bb-8de5d6f85dfb",
+   "memory": "I prefer business advice with new information, precise evidence and actionable decisions.",
+   "score": 0.3483449949645658,
+   "source_agent": "demo_a_80dcfaed"
+  }
+ ],
+ "compare": {
+  "id": "cmp_cfb5515e2f96425d",
+  "candidates": [
+   {
+    "id": "insight",
+    "label": "Deeper insight",
+    "text": "Add non-obvious insight and second-order reasoning; cut what the reader already knows."
+   },
+   {
+    "id": "register",
+    "label": "Elevated register",
+    "text": "Use a more formal, refined register and precise vocabulary."
+   }
+  ],
+  "predicted": {
+   "insight": 0.5,
+   "register": 0.5
+  }
+ },
+ "feedback": {
+  "weight_delta": {
+   "novelty": 0.7399,
+   "evidence": 0.418,
+   "formality": -0.7399,
+   "vocabulary": -0.7399,
+   "depth": 0.7399
+  },
+  "status": "tentative",
+  "observation": "For 'sophisticated' in business writing, chose 'Deeper insight' over alternatives"
+ },
+ "context": {
+  "used_tokens": 120,
+  "budget": 400,
+  "prompt": "## What is known about this user (authorized context)\n- (semantic) When the user says 'sophisticated', they have preferred: Deeper insight \u2014 Add non-obvious insight and second-order reasoning; cut what the reader already knows. (tentative: 1 comparison(s), p(top over next)=0.688)\n- (preference) For 'sophisticated' in business writing, chose 'Deeper insight' over alternatives\n- (preference) Prefers business advice with new information, precise evidence and actionable decisions\n- (memory) I prefer business advice with new information, precise evidence and actionable decisions.",
+  "trace": [
+   {
+    "id": "sem:sophisticated",
+    "decision": "included",
+    "score": 0.844,
+    "tokens": 54
+   },
+   {
+    "id": "obs_ce21813bc8554333",
+    "decision": "included",
+    "score": 0.6818,
+    "tokens": 21
+   },
+   {
+    "id": "obs_736a5dbbe2904067",
+    "decision": "included",
+    "score": 0.671,
+    "tokens": 22
+   },
+   {
+    "id": "6c1264ce-08c8-45d4-b5bb-8de5d6f85dfb",
+    "decision": "included",
+    "score": 0.6438,
+    "tokens": 23
+   }
+  ]
+ }
+}

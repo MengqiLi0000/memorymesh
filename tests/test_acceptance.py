@@ -76,3 +76,22 @@ def test_permissions_enforced(owner, agents, mk):
 
 def test_unauthenticated(app_client):
     assert app_client.get("/v1/status").status_code == 401
+
+
+def test_demo_session_and_user_token(app_client, mk):
+    r = app_client.post("/v1/demo/session")
+    assert r.status_code == 200, r.text
+    d = r.json()
+    A, B, me = mk(d["agent_a"]["key"]), mk(d["agent_b"]["key"]), mk(d["user_key"])
+    A.events.ingest(d["user_id"], "I prefer short memos.")
+    assert B.memory.search(d["user_id"], "memo length")
+    with pytest.raises(MeshAPIError):
+        B.memory.search(U, "anything")  # cannot reach other users
+    with pytest.raises(MeshAPIError):
+        me.memory.list(U)  # user token limited to own data
+    obs = me.human.get(d["user_id"])["dimensions"]["preference"][0]
+    assert me.human.correct(d["user_id"], obs["id"], "confirm")["user_verdict"] == "confirmed"
+    assert me.admin.export(d["user_id"])["memories"]
+    c = B.semantic.compare(d["user_id"], "professional", ["precision", "formal"])
+    fb = B.semantic.feedback(d["user_id"], c["id"], "precision")
+    assert fb["profile"]["status"] == "tentative"  # never 'learned' after one choice

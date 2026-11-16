@@ -15,6 +15,15 @@ from .service import Mesh
 T = asyncio.to_thread
 
 
+def _agent(p: Principal) -> str | None:
+    return p.id if p.kind == "agent" else None
+
+
+def _own(p: Principal, user_id: str):
+    if not p.owns(user_id):
+        raise Forbidden("owner-level access to this user's data required (admin key or that user's token)")
+
+
 # ------------------------------------------------------------------ schemas
 class AgentIn(BaseModel):
     name: str
@@ -208,32 +217,73 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
         return SCOPES
 
     @app.post("/v1/grants")
-    def grant(b: GrantIn, p=Depends(admin)):
+    def grant(b: GrantIn, p: Principal = Depends(principal)):
+        _own(p, b.user_id)
         return M().identity.grant(b.user_id, b.agent_id, b.scopes, b.source_agents, b.note)
 
     @app.get("/v1/grants")
-    def grants(user_id: str | None = None, agent_id: str | None = None, p=Depends(admin)):
+    def grants(user_id: str | None = None, agent_id: str | None = None, p: Principal = Depends(principal)):
+        if not p.is_admin:
+            _own(p, user_id or "")
         return M().identity.grants(user_id, agent_id)
 
     @app.post("/v1/grants/{grant_id}/revoke")
-    def revoke(grant_id: str, p=Depends(admin)):
+    def revoke(grant_id: str, p: Principal = Depends(principal)):
+        g = M().db.one("SELECT user_id FROM grants WHERE id=?", [grant_id])
+        _own(p, g["user_id"] if g else "")
         return M().identity.revoke(grant_id)
 
     @app.get("/v1/audit")
-    def audit(user_id: str | None = None, limit: int = 200, p=Depends(admin)):
+    def audit(user_id: str | None = None, limit: int = 200, p: Principal = Depends(principal)):
+        if not p.is_admin:
+            _own(p, user_id or "")
         return M().identity.audit_log(user_id, limit)
+
+    @app.post("/v1/users/{user_id}/tokens")
+    def user_token(user_id: str, label: str = "", p=Depends(admin)):
+        """Issue a self-service token for a data subject: full rights over their own data only."""
+        return M().identity.create_user_token(user_id, label)
+
+    # ---- public demo sessions (no visitor credentials; isolated per session)
+    demo_hits: dict = {}
+
+    @app.post("/v1/demo/session")
+    def demo_session(request: Request):
+        import secrets, time
+        if not M().s.demo_enabled:
+            raise Forbidden("demo sessions are disabled on this server (MESH_DEMO=0)")
+        ip = request.client.host if request.client else "?"
+        now_t = time.time()
+        hits = [t for t in demo_hits.get(ip, []) if now_t - t < 3600]
+        if len(hits) >= M().s.demo_sessions_per_hour:
+            raise MeshError("demo session rate limit reached; try again later")
+        demo_hits[ip] = hits + [now_t]
+        sfx = secrets.token_hex(4)
+        uid = f"demo_{sfx}"
+        idn = M().identity
+        a = idn.create_agent("Demo Agent A (writer)", "public demo", f"demo_a_{sfx}")
+        b = idn.create_agent("Demo Agent B (reader)", "public demo", f"demo_b_{sfx}")
+        ga = idn.grant(uid, a["id"], ["events:write", "memory:write", "memory:read", "graph:write", "graph:read"],
+                       note="demo session")
+        gb = idn.grant(uid, b["id"], ["memory:read", "context:read", "human:read", "semantic:read", "semantic:write",
+                                      "mind:read", "graph:read"], source_agents=[a["id"]], note="demo session")
+        u = idn.create_user_token(uid, "demo session")
+        return {"user_id": uid, "user_key": u["api_key"],
+                "agent_a": {"id": a["id"], "key": a["api_key"], "grant": ga},
+                "agent_b": {"id": b["id"], "key": b["api_key"], "grant": gb},
+                "note": "Isolated demo data. Keys only grant access to this demo user."}
 
     # ---- memory (Mem0)
     @app.post("/v1/memory")
     async def mem_add(b: MemoryAdd, p: Principal = Depends(principal)):
         M().authz(p, b.user_id, "memory:write")
-        return await T(M().memory.add, b.messages, b.user_id, None if p.is_admin else p.id, b.run_id, b.metadata,
+        return await T(M().memory.add, b.messages, b.user_id, _agent(p), b.run_id, b.metadata,
                        b.infer, {"type": "api", "principal": p.id})
 
     @app.post("/v1/memory/batch")
     async def mem_batch(b: MemoryBatch, p: Principal = Depends(principal)):
         M().authz(p, b.user_id, "memory:write")
-        return [await T(M().memory.add, i.messages, b.user_id, None if p.is_admin else p.id, i.run_id, i.metadata,
+        return [await T(M().memory.add, i.messages, b.user_id, _agent(p), i.run_id, i.metadata,
                         i.infer, {"type": "api-batch"}) for i in b.items]
 
     @app.post("/v1/memory/search")
@@ -263,7 +313,7 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
     async def mem_update(memory_id: str, b: MemoryUpdate, p: Principal = Depends(principal)):
         M().authz(p, b.user_id, "memory:write", memory_id)
         m = await T(M().memory.get, memory_id)
-        if m.get("user_id") != b.user_id or (not p.is_admin and (m.get("metadata") or {}).get("mesh_source_agent") != p.id):
+        if m.get("user_id") != b.user_id or (not p.owns(b.user_id) and (m.get("metadata") or {}).get("mesh_source_agent") != p.id):
             raise Forbidden("may only update own memories")
         return await T(M().memory.update, memory_id, b.text, b.metadata)
 
@@ -272,7 +322,8 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
         return await M().delete_memory(p, user_id, memory_id)
 
     @app.post("/v1/memory/import")
-    async def mem_import(b: MemoryImport, p=Depends(admin)):
+    async def mem_import(b: MemoryImport, p: Principal = Depends(principal)):
+        _own(p, b.user_id)
         return await T(M().memory.import_, b.user_id, b.items)
 
     # ---- events / ingestion
@@ -282,7 +333,8 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
                                 b.wait, b.graph)
 
     @app.get("/v1/events")
-    def events(user_id: str, limit: int = 100, p=Depends(admin)):
+    def events(user_id: str, limit: int = 100, p: Principal = Depends(principal)):
+        _own(p, user_id)
         return M().db.query("SELECT * FROM events WHERE user_id=? ORDER BY ingested_at DESC LIMIT ?", [user_id, limit])
 
     @app.delete("/v1/events/{event_id}")
@@ -332,13 +384,13 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
     async def human_infer(b: EventIn, p: Principal = Depends(principal)):
         M().authz(p, b.user_id, "human:write")
         return await T(M().human.derive, b.user_id, b.content, {"type": "api", "principal": p.id},
-                       None if p.is_admin else p.id, b.context)
+                       _agent(p), b.context)
 
     @app.post("/v1/human/observations")
     async def human_add(b: ObservationIn, p: Principal = Depends(principal)):
         M().authz(p, b.user_id, "human:write")
         return await T(M().human.add_observation, b.user_id, b.kind, b.statement, b.epistemic, b.confidence,
-                       b.polarity, [{"type": "manual", "principal": p.id}], None if p.is_admin else p.id)
+                       b.polarity, [{"type": "manual", "principal": p.id}], _agent(p))
 
     @app.post("/v1/human/query")
     async def human_query(b: HumanQuery, p: Principal = Depends(principal)):
@@ -346,7 +398,8 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
         return await T(M().human.query, b.user_id, b.question, b.k)
 
     @app.post("/v1/human/observations/{obs_id}/correct")
-    def human_correct(obs_id: str, b: Correction, p=Depends(admin)):
+    def human_correct(obs_id: str, b: Correction, p: Principal = Depends(principal)):
+        _own(p, b.user_id)
         return M().human.correct(b.user_id, obs_id, b.action, b.statement)
 
     @app.get("/v1/human/observations/{obs_id}/history")
@@ -393,7 +446,7 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
     async def s_compare(b: CompareIn, p: Principal = Depends(principal)):
         M().authz(p, b.user_id, "semantic:write")
         return await T(M().semantic.compare, b.user_id, b.concept, b.candidates, b.context, b.task,
-                       None if p.is_admin else p.id)
+                       _agent(p))
 
     @app.post("/v1/semantic/feedback")
     async def s_feedback(b: FeedbackIn, p: Principal = Depends(principal)):
@@ -403,7 +456,7 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
         obs = await T(M().human.add_observation, b.user_id, "preference",
                       f"For '{c['concept']}'" + (f" in {c['context']}" if c["context"] != "*" else "") +
                       f", chose '{r['winner']['label']}' over alternatives", "observed", 0.8, 1,
-                      [{"type": "comparison", "id": b.comparison_id}], None if p.is_admin else p.id, c["context"])
+                      [{"type": "comparison", "id": b.comparison_id}], _agent(p), c["context"])
         r["observation"] = {"id": obs["id"], "statement": obs["statement"], "consolidation": obs.get("consolidation")}
         return r
 
@@ -434,11 +487,11 @@ def create_app(mesh: Mesh | None = None) -> FastAPI:
 
     # ---- user data rights
     @app.get("/v1/users/{user_id}/export")
-    async def export(user_id: str, p=Depends(admin)):
+    async def export(user_id: str, p: Principal = Depends(principal)):
         return await M().export_user(p, user_id)
 
     @app.delete("/v1/users/{user_id}")
-    async def delete_user(user_id: str, p=Depends(admin)):
+    async def delete_user(user_id: str, p: Principal = Depends(principal)):
         return await M().delete_user(p, user_id)
 
     return app

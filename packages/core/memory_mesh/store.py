@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS sem_profiles(user_id TEXT, concept TEXT, context TEXT
   updated_at TEXT, PRIMARY KEY(user_id, concept, context));
 CREATE TABLE IF NOT EXISTS sem_feedback(id TEXT PRIMARY KEY, user_id TEXT, comparison_id TEXT, concept TEXT, context TEXT,
   selected TEXT, rejected TEXT, features TEXT, predicted_p REAL, ts TEXT);
+CREATE TABLE IF NOT EXISTS user_tokens(key_hash TEXT PRIMARY KEY, user_id TEXT, label TEXT, created_at TEXT);
 CREATE TABLE IF NOT EXISTS graph_provenance(edge_uuid TEXT PRIMARY KEY, user_id TEXT, source_id TEXT, source_type TEXT, created_at TEXT);
 """
 

@@ -113,12 +113,23 @@ class SemanticArena:
             conf = round(p, 3)
         evidence = self.db.query("SELECT id,comparison_id,selected,context,ts FROM sem_feedback WHERE user_id=? AND "
                                  "concept=? ORDER BY ts DESC LIMIT 20", [user_id, concept])
-        n_obs = sum(L["n"] for L in levels[1:])
+        n_obs = levels[1]["n"]  # concept-level count (context level counts the same choices)
         return {"user_id": user_id, "term": term, "concept": concept, "context": context, "source": source,
                 "interpretations": scored, "preferred": scored[0] if n_obs or levels[0]["n"] else None,
                 "confidence_top_vs_next": conf, "observations": {"concept": n_obs, "user_global": levels[0]["n"]},
-                "status": "learned" if n_obs else ("transferred" if levels[0]["n"] else "unknown"),
+                "status": self._status(n_obs, levels[0]["n"]),
                 "next_query": self._select_pair(levels, scored), "evidence": evidence}
+
+    @staticmethod
+    def _status(n_concept: int, n_user: int) -> str:
+        """Evidence level. Deliberately never 'learned' from one or two choices."""
+        if n_concept == 0:
+            return "transferred" if n_user else "unknown"
+        if n_concept < 3:
+            return "tentative"
+        if n_concept < 10:
+            return "emerging"
+        return "consistent"
 
     @staticmethod
     def _select_pair(levels, cands) -> dict | None:
@@ -243,4 +254,5 @@ class SemanticArena:
             return None
         return {"term": term, "concept": r["concept"], "instruction": r["preferred"]["instruction"],
                 "label": r["preferred"]["label"], "confidence": r["confidence_top_vs_next"], "status": r["status"],
+                "observations": r["observations"]["concept"],
                 "evidence": [e["comparison_id"] for e in r["evidence"]]}

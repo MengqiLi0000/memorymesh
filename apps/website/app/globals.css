@@ -1,67 +1,24 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
-  --bg: #fbfbfa;
+  --bg: #ffffff;
   --panel: #ffffff;
-  --sunken: #f3f3f1;
-  --fg: #1b1c1e;
-  --muted: #5f6368;
-  --faint: #8a8f96;
-  --line: #e4e4e0;
-  --accent: #2f5d8a;
+  --sunken: #f7f8fa;
+  --fg: #111111;
+  --muted: #60646c;
+  --faint: #8b8f96;
+  --line: #e6e8eb;
+  --accent: #1f5bd8;
   --accent-fg: #ffffff;
-  --accent-soft: #e7eef6;
-  --ok: #2f7a4d;
-  --ok-soft: #e6f2ea;
-  --warn: #8a6116;
-  --warn-soft: #f7efdc;
-  --bad: #a33a32;
-  --bad-soft: #f8e6e4;
+  --accent-soft: #eef3fd;
+  --ok: #1d7a46;
+  --ok-soft: #eaf6ef;
+  --warn: #8a5a00;
+  --warn-soft: #fbf3e2;
+  --bad: #b42318;
+  --bad-soft: #fdecea;
   color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #121315;
-    --panel: #18191c;
-    --sunken: #1e2023;
-    --fg: #e7e7e4;
-    --muted: #a3a6ab;
-    --faint: #767a80;
-    --line: #2b2d31;
-    --accent: #84aedb;
-    --accent-fg: #0e1a26;
-    --accent-soft: #1c2733;
-    --ok: #7cc597;
-    --ok-soft: #17261d;
-    --warn: #d9b36a;
-    --warn-soft: #2a2316;
-    --bad: #e8877e;
-    --bad-soft: #2d1a18;
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --bg: #121315;
-  --panel: #18191c;
-  --sunken: #1e2023;
-  --fg: #e7e7e4;
-  --muted: #a3a6ab;
-  --faint: #767a80;
-  --line: #2b2d31;
-  --accent: #84aedb;
-  --accent-fg: #0e1a26;
-  --accent-soft: #1c2733;
-  --ok: #7cc597;
-  --ok-soft: #17261d;
-  --warn: #d9b36a;
-  --warn-soft: #2a2316;
-  --bad: #e8877e;
-  --bad-soft: #2d1a18;
-  color-scheme: dark;
 }
 
 @theme inline {
@@ -81,8 +38,8 @@
   --color-warn-soft: var(--warn-soft);
   --color-bad: var(--bad);
   --color-bad-soft: var(--bad-soft);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 html, body {
@@ -90,15 +47,29 @@ html, body {
   color: var(--fg);
 }
 body {
-  font-feature-settings: "ss01", "cv11";
+  font-weight: 400;
+  font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
 }
+h1, h2, h3, h4 { font-weight: 400; }
+.display { font-size: clamp(56px, 8vw, 104px); line-height: 0.98; letter-spacing: -0.045em; font-weight: 400; }
+.h-section { font-size: clamp(32px, 4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 400; }
+.eyebrow { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); font-weight: 500; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.fade-in { animation: fade-in 180ms ease-out both; }
+@keyframes fade-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+/* Shiki output */
+.shiki { background: transparent !important; }
+.shiki code { counter-reset: line; }
 
 /* Prose for docs */
 .prose { max-width: 46rem; line-height: 1.7; font-size: 15.5px; }
-.prose h1 { font-size: 1.9rem; font-weight: 650; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 0.75rem; }
-.prose h2 { font-size: 1.2rem; font-weight: 620; letter-spacing: -0.01em; margin: 2.2rem 0 0.6rem; padding-top: 0.4rem; }
-.prose h3 { font-size: 1rem; font-weight: 620; margin: 1.6rem 0 0.4rem; }
+.prose h1 { font-size: 1.9rem; font-weight: 400; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 0.75rem; }
+.prose h2 { font-size: 1.2rem; font-weight: 500; letter-spacing: -0.01em; margin: 2.2rem 0 0.6rem; padding-top: 0.4rem; }
+.prose h3 { font-size: 1rem; font-weight: 500; margin: 1.6rem 0 0.4rem; }
 .prose p { margin: 0.7rem 0; color: var(--fg); }
 .prose ul, .prose ol { margin: 0.6rem 0 0.6rem 1.25rem; }
 .prose ul { list-style: disc; }

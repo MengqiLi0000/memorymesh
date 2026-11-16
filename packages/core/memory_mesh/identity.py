@@ -10,12 +10,16 @@ SCOPES = ["memory:read", "memory:write", "graph:read", "graph:write", "human:rea
 
 @dataclass
 class Principal:
-    kind: str  # "admin" (the local user/owner) | "agent"
+    kind: str  # "admin" (instance owner) | "user" (a data subject, own data only) | "agent"
     id: str
 
     @property
     def is_admin(self):
         return self.kind == "admin"
+
+    def owns(self, user_id: str) -> bool:
+        """Owner-level rights over user_id's data: the instance admin, or that user themself."""
+        return self.kind == "admin" or (self.kind == "user" and self.id == user_id)
 
 
 def _h(key: str) -> str:
@@ -32,6 +36,9 @@ class Identity:
             raise Unauthorized("Missing bearer token")
         if hmac.compare_digest(token, self.admin_key):
             return Principal("admin", "owner")
+        u = self.db.one("SELECT user_id FROM user_tokens WHERE key_hash=?", [_h(token)])
+        if u:
+            return Principal("user", u["user_id"])
         row = self.db.one("SELECT id FROM agents WHERE key_hash=?", [_h(token)])
         if not row:
             raise Unauthorized("Invalid token")
@@ -47,6 +54,11 @@ class Identity:
                                   "created_at": now()})
         return {"id": aid, "name": name, "description": description, "api_key": key,
                 "note": "Store the api_key now; only its hash is kept."}
+
+    def create_user_token(self, user_id: str, label: str = "") -> dict:
+        key = "mu_" + secrets.token_urlsafe(24)
+        self.db.insert("user_tokens", {"key_hash": _h(key), "user_id": user_id, "label": label, "created_at": now()})
+        return {"user_id": user_id, "api_key": key}
 
     def list_agents(self):
         return self.db.query("SELECT id,name,description,created_at FROM agents ORDER BY created_at")
@@ -86,9 +98,12 @@ class Identity:
     # --- authorization
     def authorize(self, pr: Principal, user_id: str, scope: str, resource: str = "") -> set[str] | None:
         """Returns the set of agent ids whose data the principal may read (None = unrestricted)."""
-        if pr.is_admin:
+        if pr.owns(user_id):
             self.audit(pr.id, user_id, scope, resource, True, {})
             return None
+        if pr.kind == "user":
+            self.audit(pr.id, user_id, scope, resource, False, {"reason": "user tokens only access their own data"})
+            raise Forbidden("a user token can only access its own data")
         gs = [g for g in self.grants(user_id, pr.id, active_only=True)
               if scope in g["scopes"] or "*" in g["scopes"]]
         if not gs:
