@@ -24,8 +24,9 @@ export default function Page() {
       <h2>Results</h2>
       <p>
         The package README documents the method, the experiment runner (held-out separation per layer, reproducibility across seeds and disjoint
-        question halves, and a steering sweep reported next to a prompting baseline), and the outcome of the runs that have been made. In the run it
-        reports, prompting was the stronger and more coherent intervention. Read <code>packages/persona-lab/README.md</code> for the numbers and their
+        question halves, and a steering sweep reported next to a prompting baseline), and the outcome of the runs that have been made. In the small run it
+        reports, small steering coefficients moved a lexical proxy at least as far as system prompting, while larger
+        coefficients broke coherence and prompting never did. It is a smoke test, not evidence of a better method. Read <code>packages/persona-lab/README.md</code> for the numbers and their
         caveats; this site does not restate them.
       </p>
       <NextLink href="/docs/mcp" title="MCP Server" />

@@ -15,10 +15,10 @@ from .semantic import SemanticArena
 from .store import Store, new_id, now
 
 TRIPLE_PATTERNS = [  # offline graph facts from first-person statements
-    (r"\bi work (?:at|for) (?P<o>[A-Z][\w&.\- ]{1,40})", "WORKS_AT"),
-    (r"\bi live in (?P<o>[A-Z][\w\- ]{1,40})", "LIVES_IN"),
-    (r"\bmy (?P<rel>cofounder|co-founder|manager|boss|partner|wife|husband|colleague|investor|client) (?:is )?(?P<o>[A-Z][a-z]+(?: [A-Z][a-z]+)?)", None),
-    (r"\bi(?:'m| am) (?:working on|building) (?P<o>[A-Z][\w\- ]{1,40})", "WORKS_ON"),
+    (r"\bi work (?:at|for) (?P<o>(?-i:[A-Z][\w&\-]*(?: [A-Z][\w&\-]*){0,3}))", "WORKS_AT"),
+    (r"\bi live in (?P<o>(?-i:[A-Z][\w&\-]*(?: [A-Z][\w&\-]*){0,3}))", "LIVES_IN"),
+    (r"\bmy (?P<rel>cofounder|co-founder|manager|boss|partner|wife|husband|colleague|investor|client) (?:is )?(?P<o>(?-i:[A-Z][a-z]+(?: [A-Z][a-z]+)?))", None),
+    (r"\bi(?:'m| am) (?:working on|building) (?P<o>(?-i:[A-Z][\w&\-]*(?: [A-Z][\w&\-]*){0,3}))", "WORKS_ON"),
 ]
 
 

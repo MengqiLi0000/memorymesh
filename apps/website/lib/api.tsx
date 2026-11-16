@@ -65,7 +65,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         }
         return { ok: true, status: r.status, data, ms };
       } catch (e: any) {
-        return { ok: false, status: 0, data: null, error: `Network error: ${e?.message ?? e}. Is the API running at ${settings.baseUrl}?`, ms: 0 };
+        return { ok: false, status: 0, data: null as T, error: `Network error: ${e?.message ?? e}. Is the API running at ${settings.baseUrl}?`, ms: 0 };
       }
     },
     [settings.baseUrl, settings.apiKey]
