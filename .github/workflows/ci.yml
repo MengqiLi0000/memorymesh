@@ -1,0 +1,19 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --all-packages
+      - run: uv run pytest -q
+      - run: uv run python benchmarks/semantic_sim.py
+  typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+      - run: cd packages/sdk-typescript && pnpm install && pnpm build
+      - run: cd apps/website && pnpm install && pnpm build

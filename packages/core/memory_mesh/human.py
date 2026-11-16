@@ -11,16 +11,16 @@ STOP = set("i me my the a an to of and or for in on at with that this it is are 
 
 # (kind, regex, polarity, epistemic, confidence)
 PATTERNS = [
-    ("preference", r"\bi (?:really |strongly )?(?:prefer|like|love|value|appreciate|enjoy)\b (?P<x>[^.!?\n]+)", 1, "observed", .85),
-    ("preference", r"\bi (?:don't|do not|dislike|hate|can't stand|cannot stand)\b (?:like |want )?(?P<x>[^.!?\n]+)", -1, "observed", .85),
-    ("standard", r"\b(?:please )?(?:always|never) (?P<x>[^.!?\n]+)", 1, "observed", .8),
-    ("standard", r"\b(?:good|great) (?:\w+ ){0,3}(?:should|must|needs to) (?P<x>[^.!?\n]+)", 1, "observed", .75),
+    ("preference", r"\bi (?:really |strongly )?(?:prefer|like|love|value|appreciate|enjoy)\b (?P<x>[^.!?;\n]+)", 1, "observed", .85),
+    ("preference", r"\bi (?:don't|do not|dislike|hate|can't stand|cannot stand)\b (?:like |want )?(?P<x>[^.!?;\n]+)", -1, "observed", .85),
+    ("standard", r"\b(?:please )?(?:always|never) (?P<x>[^.!?;\n]+)", 1, "observed", .8),
+    ("standard", r"\b(?:good|great) (?:\w+ ){0,3}(?:should|must|needs to) (?P<x>[^.!?;\n]+)", 1, "observed", .75),
     ("standard", r"\b(?:too|overly) (?P<x>long|verbose|generic|vague|formal|casual|wordy|shallow|technical|simple)\b", -1, "observed", .7),
-    ("goal", r"\b(?:i(?:'m| am) (?:trying|planning|aiming|hoping) to|my goal is to|i want to|i need to) (?P<x>[^.!?\n]+)", 1, "observed", .8),
-    ("intention", r"\bi(?:'m| am)? (?:going to|gonna|will) (?P<x>[^.!?\n]+)", 1, "observed", .7),
-    ("belief", r"\bi (?:think|believe|suspect|feel) (?:that )?(?P<x>[^.!?\n]+)", 1, "observed", .7),
-    ("knowledge", r"\bi (?:know|understand|am familiar with|have (?:worked|experience) (?:with|in)) (?P<x>[^.!?\n]+)", 1, "observed", .75),
-    ("knowledge", r"\b(?:i(?:'m| am) new to|i don't (?:know|understand)|i(?:'m| am) not familiar with) (?P<x>[^.!?\n]+)", -1, "observed", .75),
+    ("goal", r"\b(?:i(?:'m| am) (?:trying|planning|aiming|hoping) to|my goal is to|i want to|i need to) (?P<x>[^.!?;\n]+)", 1, "observed", .8),
+    ("intention", r"\bi(?:'m| am)? (?:going to|gonna|will) (?P<x>[^.!?;\n]+)", 1, "observed", .7),
+    ("belief", r"\bi (?:think|believe|suspect|feel) (?:that )?(?P<x>[^.!?;\n]+)", 1, "observed", .7),
+    ("knowledge", r"\bi (?:know|understand|am familiar with|have (?:worked|experience) (?:with|in)) (?P<x>[^.!?;\n]+)", 1, "observed", .75),
+    ("knowledge", r"\b(?:i(?:'m| am) new to|i don't (?:know|understand)|i(?:'m| am) not familiar with) (?P<x>[^.!?;\n]+)", -1, "observed", .75),
     ("fact", r"\bi (?:work|live) (?:at|in|for) (?P<x>[^.!?\n,]+)", 1, "observed", .9),
     ("fact", r"\bi(?:'m| am) (?:a|an|the) (?P<x>[a-z ]{3,40}?)(?: at| in| for|[.,!?]|$)", 1, "observed", .85),
     ("relationship", r"\bmy (?P<x>(?:wife|husband|partner|boss|manager|cofounder|co-founder|colleague|friend|mother|father|"

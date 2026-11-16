@@ -1,0 +1,155 @@
+[
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 4,
+   "n_test": 30,
+   "seed": 0
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.7373,
+   "chance": 0.5047,
+   "majority": 0.5087,
+   "concept_only": 0.5453,
+   "hierarchical": 0.591,
+   "transfer_hierarchical": 0.569,
+   "transfer_chance": 0.5157
+  }
+ },
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 12,
+   "n_test": 30,
+   "seed": 0
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.7487,
+   "chance": 0.4933,
+   "majority": 0.4953,
+   "concept_only": 0.596,
+   "hierarchical": 0.6273,
+   "transfer_hierarchical": 0.5883,
+   "transfer_chance": 0.513
+  }
+ },
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 30,
+   "n_test": 30,
+   "seed": 0
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.745,
+   "chance": 0.4913,
+   "majority": 0.5013,
+   "concept_only": 0.6483,
+   "hierarchical": 0.6707,
+   "transfer_hierarchical": 0.6217,
+   "transfer_chance": 0.52
+  }
+ },
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 4,
+   "n_test": 30,
+   "seed": 1
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.7473,
+   "chance": 0.505,
+   "majority": 0.4917,
+   "concept_only": 0.5453,
+   "hierarchical": 0.579,
+   "transfer_hierarchical": 0.5393,
+   "transfer_chance": 0.5003
+  }
+ },
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 12,
+   "n_test": 30,
+   "seed": 1
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.7393,
+   "chance": 0.5123,
+   "majority": 0.5193,
+   "concept_only": 0.6063,
+   "hierarchical": 0.634,
+   "transfer_hierarchical": 0.6013,
+   "transfer_chance": 0.507
+  }
+ },
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 30,
+   "n_test": 30,
+   "seed": 1
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.7447,
+   "chance": 0.494,
+   "majority": 0.4987,
+   "concept_only": 0.6447,
+   "hierarchical": 0.66,
+   "transfer_hierarchical": 0.6303,
+   "transfer_chance": 0.507
+  }
+ },
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 4,
+   "n_test": 30,
+   "seed": 2
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.7277,
+   "chance": 0.5027,
+   "majority": 0.498,
+   "concept_only": 0.5567,
+   "hierarchical": 0.596,
+   "transfer_hierarchical": 0.5577,
+   "transfer_chance": 0.4933
+  }
+ },
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 12,
+   "n_test": 30,
+   "seed": 2
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.736,
+   "chance": 0.4893,
+   "majority": 0.4977,
+   "concept_only": 0.591,
+   "hierarchical": 0.611,
+   "transfer_hierarchical": 0.612,
+   "transfer_chance": 0.5057
+  }
+ },
+ {
+  "config": {
+   "n_users": 200,
+   "n_train": 30,
+   "n_test": 30,
+   "seed": 2
+  },
+  "accuracy": {
+   "oracle_ceiling": 0.7397,
+   "chance": 0.485,
+   "majority": 0.5073,
+   "concept_only": 0.654,
+   "hierarchical": 0.653,
+   "transfer_hierarchical": 0.594,
+   "transfer_chance": 0.506
+  }
+ }
+]

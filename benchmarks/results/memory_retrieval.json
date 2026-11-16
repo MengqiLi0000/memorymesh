@@ -1,0 +1,13 @@
+{
+ "n": 12,
+ "recall@1": 0.833,
+ "recall@3": 1.0,
+ "cross_user_leaks": 0,
+ "source_agent_filter_correct": "12/12",
+ "search_latency_ms": {
+  "median": 3.7,
+  "max": 5.3
+ },
+ "embedder": "BAAI/bge-small-en-v1.5 (fastembed)",
+ "llm": "none"
+}

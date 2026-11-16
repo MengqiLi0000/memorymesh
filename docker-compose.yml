@@ -1,0 +1,20 @@
+# Local deployment. Written but NOT built in the authoring environment (Docker was unavailable there).
+services:
+  api:
+    build: { context: ., dockerfile: infra/Dockerfile }
+    ports: ["127.0.0.1:8765:8765"]
+    volumes: ["mesh-data:/data"]
+    environment:
+      MESH_LLM_PROVIDER: ${MESH_LLM_PROVIDER:-none}
+      MESH_LLM_API_KEY: ${MESH_LLM_API_KEY:-}
+      MESH_LLM_MODEL: ${MESH_LLM_MODEL:-}
+      MESH_GRAPH: ${MESH_GRAPH:-kuzu}
+  website:
+    image: node:22-slim
+    working_dir: /app
+    volumes: ["./apps/website:/app"]
+    command: sh -c "corepack enable && pnpm install && pnpm build && pnpm start"
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on: [api]
+volumes:
+  mesh-data:

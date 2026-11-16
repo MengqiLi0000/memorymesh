@@ -1,0 +1,6 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+W1116 13:04:55.597000 9229 .venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:01<06:29,  1.35s/it]Loading weights: 100%|██████████| 290/290 [00:01<00:00, 214.25it/s]
+[formality] generating contrastive responses ...
+[formality] steering layer=12 coeff=-8
+[formality] steering layer=12 coeff=-4

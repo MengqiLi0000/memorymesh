@@ -1,0 +1,18 @@
+Memory Mesh
+Copyright 2026 Memory Mesh contributors
+Licensed under the Apache License, Version 2.0.
+
+This product depends on and integrates the following open-source software:
+
+- Mem0 (mem0ai 2.2.1) — https://github.com/mem0ai/mem0 — Apache License 2.0.
+  Used unmodified as a dependency (memory storage, extraction, search, history).
+- Graphiti (graphiti-core 0.31.2) — https://github.com/getzep/graphiti — Apache License 2.0.
+  Used unmodified as a dependency (temporal knowledge graph, hybrid search).
+- persona_vectors — https://github.com/safety-research/persona_vectors (commit b8e0f04) — Apache License 2.0.
+  The method (and any adapted code, marked in file headers) is used in packages/persona-lab.
+  Reference: Chen et al., "Persona Vectors: Monitoring and Controlling Character Traits in Language Models", 2025.
+
+Honcho (https://github.com/plastic-labs/honcho, AGPL-3.0) was studied at the level of public behavior and
+high-level architecture only. No Honcho source code is included in or distributed with Memory Mesh.
+
+Full license texts: third_party/licenses/. Transitive dependency licenses: THIRD_PARTY_LICENSES.md.

@@ -1,0 +1,8 @@
+memory-mesh-persona-lab
+Copyright Memory Mesh contributors.
+
+Portions of this package (persona_lab/vectors.py, persona_lab/steering.py) are
+adapted from safety-research/persona_vectors (https://github.com/safety-research/persona_vectors),
+commit b8e0f044fe2410a6fad579f38324f03f13b4e917, licensed under the Apache License, Version 2.0,
+and modified by Memory Mesh. Method: Chen et al., 2025, "Persona Vectors: Monitoring and
+Controlling Character Traits in Language Models".
