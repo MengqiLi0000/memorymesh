@@ -1,0 +1,8 @@
+[project]
+name = "mm-template-semantic-cli"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = ["memory-mesh-sdk", "httpx"]
+
+[tool.uv.sources]
+memory-mesh-sdk = { path = "../../packages/sdk-python", editable = true }

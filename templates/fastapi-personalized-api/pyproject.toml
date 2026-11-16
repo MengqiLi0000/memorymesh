@@ -1,0 +1,8 @@
+[project]
+name = "mm-template-fastapi"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = ["memory-mesh-sdk", "fastapi>=0.115", "uvicorn>=0.30"]
+
+[tool.uv.sources]
+memory-mesh-sdk = { path = "../../packages/sdk-python", editable = true }

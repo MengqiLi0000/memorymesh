@@ -18,6 +18,15 @@
   --warn-soft: #fbf3e2;
   --bad: #b42318;
   --bad-soft: #fdecea;
+  /* Monopoly property-group palette (module colors) */
+  --mono-brown: #955436;
+  --mono-lightblue: #aae0fa;
+  --mono-pink: #d93a96;
+  --mono-orange: #f7941d;
+  --mono-red: #ed1b24;
+  --mono-yellow: #fef200;
+  --mono-green: #1fb25a;
+  --mono-darkblue: #0072bb;
   color-scheme: light;
 }
 

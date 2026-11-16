@@ -1,0 +1,7 @@
+[
+  {"slug": "python-shared-memory", "title": "Two agents, one memory", "desc": "Agent A learns, Agent B recalls under a grant.", "lang": "Python", "module": "agents", "run": "uv run python main.py", "tested": true},
+  {"slug": "fastapi-personalized-api", "title": "Personalized FastAPI service", "desc": "Remember endpoint + per-user system prompt.", "lang": "Python", "module": "context", "run": "uv run uvicorn app:app --port 9000", "tested": true},
+  {"slug": "typescript-agent", "title": "TypeScript agent", "desc": "Node agent on the TypeScript SDK.", "lang": "TypeScript", "module": "memory", "run": "npm install && npm start", "tested": true},
+  {"slug": "semantic-feedback-cli", "title": "Semantic Arena in the terminal", "desc": "A/B choices that teach what a word means to you.", "lang": "Python", "module": "semantic", "run": "uv run python arena.py sophisticated", "tested": true},
+  {"slug": "mcp-claude-code", "title": "Memory for Claude Code", "desc": "Register the MCP server with one script.", "lang": "MCP", "module": "human", "run": "MESH_API_KEY=... MESH_USER_ID=... ./add.sh", "tested": false, "note": "MCP server tested with the official client; not tested inside Claude Code."}
+]

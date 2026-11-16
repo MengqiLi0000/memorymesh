@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "memory-mesh": {
+      "command": "uv",
+      "args": ["run", "--directory", "/absolute/path/to/memorymesh", "memory-mesh-mcp"],
+      "env": { "MESH_URL": "http://127.0.0.1:8765", "MESH_API_KEY": "mm_...", "MESH_USER_ID": "user_123" }
+    }
+  }
+}
